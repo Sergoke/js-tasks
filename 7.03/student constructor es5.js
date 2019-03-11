@@ -1,30 +1,33 @@
-function Student(name, surname, birthYear) {
-    this.name = name;
-    this.surname = surname;
-    this.birthYear = birthYear;
-    this.marks = [91, 100, 95, 93];
-    this.attendance = new Array(25);
+let Student = (function(){
+    function Student(name, surname, birthYear, marks) {
+        this.name = name;
+        this.surname = surname;
+        this.birthYear = birthYear;
+        this.marks = marks || [];
+        this.attendance = new Array(25);
+    }
 
-    this.getAge = function() {
+    Student.prototype.getAge = function() {
         return new Date().getFullYear() - this.birthYear;
     };
 
-    this.getAverageMark = function() {
+    Student.prototype.getAverageMark = function() {
+        if(!this.marks.length) return -1;
         let sum = this.marks.reduce(function(prev, cur) {
             return prev + cur;
         });
         return sum / this.marks.length;
     };
 
-    this.present = function() {
+    Student.prototype.present = function() {
         return addAttendance.call(this, true);
     };
 
-    this.absent = function() {
+    Student.prototype.absent = function() {
         return addAttendance.call(this, false);
     };
 
-    this.summary = function() {
+    Student.prototype.summary = function() {
         let daysPassed = this.attendance.filter(elem => true).length;
         let attended = this.attendance.filter(day => day).length;
         let averageAttendance = attended / daysPassed;
@@ -37,6 +40,7 @@ function Student(name, surname, birthYear) {
         return "Редиска!";
     };
 
+    //private helpers
     function addAttendance(wasAttended) {
         let index = Math.max(this.attendance.lastIndexOf(true), this.attendance.lastIndexOf(false)) + 1;
         if(index < this.attendance.length) {
@@ -45,14 +49,17 @@ function Student(name, surname, birthYear) {
         }
         return false;
     }
-}
 
-let david = new Student('David', 'Smith', 2000);
+    return Student;
+})();
+
+let david = new Student('David', 'Smith', 2000, [90, 30, 200]);
 
 for(let i = 0; i < 100; i++){
     Math.random() < 0.95 ? david.present() : david.absent();
 }
 
-console.log(david.attendance.length);
-console.log(david.getAverageMark());
-console.log(david.summary());
+console.log('age: ' + david.getAge());
+console.log('attenance length: ' + david.attendance.length);
+console.log('average mark: ' + david.getAverageMark());
+console.log('summary: ' + david.summary());
