@@ -114,8 +114,11 @@ let p = {//p = polyfill
     },
 
     Function: {
-        call: function(newThis) {
-
+        call: function(thisArg) {
+            thisArg[this.name] = this;
+            var res = thisArg[this.name]();
+            delete thisArg[this.name];
+            return res;
         }
     }
 };
