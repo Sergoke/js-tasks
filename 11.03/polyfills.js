@@ -98,12 +98,27 @@ let p = {//p = polyfill
         },
 
         sort: function(comparator) {
+            comparator = comparator || function(a, b) {//default comparator
+                if(String(a) > String(b)) return 1;
+            };
+
+            for(var i = 1; i < this.length; i++){// insertion sort
+                var cur = this[i];
+                for(var j = i; j > 0 && comparator(this[j - 1], cur) > 0; j--){
+                    this[j] = this[j - 1];
+                }
+                this[j] = cur;
+            }
+            return this;
+        }
+    },
+
+    Function: {
+        call: function(newThis) {
 
         }
     }
 };
-
-console.log(p.Array);
 
 Array.prototype._pop = p.Array.pop;
 Array.prototype._push = p.Array.push;
@@ -116,6 +131,8 @@ Array.prototype._reverse = p.Array.reverse;
 Array.prototype._join = p.Array.join;
 Array.prototype._reduce = p.Array.reduce;
 Array.prototype._sort = p.Array.sort;
+
+Function.prototype._call = p.Function.call;
 
 //tests
 console.log("Object.keys({name: 'Santa', surname: 'Claus'}): ", p.Object.keys({name: 'Santa', surname: 'Claus'}));
