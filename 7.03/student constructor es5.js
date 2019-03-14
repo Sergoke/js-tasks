@@ -9,11 +9,11 @@ var Student = (function(){
         this.attendance = Object.defineProperty(new Array(25), 'length', {writable: false});
     }
 
-    Student.prototype.getAge = function() {
+    Student.prototype.getAge = function(){
         return new Date().getFullYear() - this.birthYear;
     };
 
-    Student.prototype.getAverageMark = function() {
+    Student.prototype.getAverageMark = function(){
         if(!this.marks.length) return -1;
         var sum = this.marks.reduce(function(prev, cur) {
             return prev + cur;
@@ -21,15 +21,15 @@ var Student = (function(){
         return sum / this.marks.length;
     };
 
-    Student.prototype.present = function() {
+    Student.prototype.present = function(){
         return addAttendance.call(this, true);
     };
 
-    Student.prototype.absent = function() {
+    Student.prototype.absent = function(){
         return addAttendance.call(this, false);
     };
 
-    Student.prototype.summary = function() {
+    Student.prototype.summary = function(){
         var daysPassed = this.attendance.filter(function(){return true}).length;
         var attended = this.attendance.filter(function(day){return day}).length;
         var averageAttendance = attended / daysPassed;

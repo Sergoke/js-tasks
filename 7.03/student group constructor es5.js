@@ -1,37 +1,42 @@
-function Group() {
-    this.students = [];
-    [].slice.call(arguments).forEach(function(student) {
-        this.students.push(student);
-    }, this);
-}
+var Group = (function(){
+    function Group(){
+        this.length = 0;
+        Object.defineProperty(this, 'length', {configurable: false, enumerable: false});
 
-Group.prototype.attendance = function() {
-    var studentsAttendance = this.students.map(function(student) {
-        var daysPassed = student.attendance.filter(function() {return true}).length;
-        var attended = student.attendance.filter(function(day) {return day}).length;
+        [].slice.call(arguments).forEach(function(student) {
+            this[this.length++] = student;
+        }, this);
+    }
 
-        return attended / daysPassed;
-    });
+    Group.prototype.attendance = function(){
+        var totalAttendance = 0;
+        for(var key in this){
+            var daysPassed = this[key].attendance.filter(function(){return true}).length;
+            var attended = this[key].attendance.filter(function(day) {return day}).length;
 
-    var totalAttendance = studentsAttendance.reduce(function(prev, cur) {
-        return prev + cur;
-    });
+            totalAttendance +=  attended / daysPassed;
+        }
 
-    return totalAttendance / this.students.length * 100 + '%';
-};
+        return totalAttendance / this.length * 100 + '%';
+    };
+    Object.defineProperty(Group.prototype, 'attendance', {configurable: false, enumerable: false});
 
-Group.prototype.performance = function() {
-    var totalAverageMark = this.students.reduce(function(prev, cur) {
-        return prev.getAverageMark() + cur.getAverageMark();
-    });
+    Group.prototype.performance = function(){
+        var totalAverageMark = 0;
+        for(var key in this){
+            totalAverageMark += this[key].getAverageMark();
+        }
+        return totalAverageMark / this.length;
+    };
+    Object.defineProperty(Group.prototype, 'performance', {configurable: false, enumerable: false});
 
-    return totalAverageMark / this.students.length;
-};
+    return Group;
+})();
 
 //tests
 var gr = new Group(new Student('David', 'Smith', 2000, [90, 30, 200]), new Student('David', 'Smith', 2000, [90, 30, 100]));
-gr.students[0].present();
-gr.students[0].absent();
-gr.students[1].present();
-gr.students[1].present();
+gr[0].present();
+gr[0].absent();
+gr[1].present();
+gr[1].present();
 console.log(gr, ' attendance:', gr.attendance(), ' performance:', gr.performance());
