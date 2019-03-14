@@ -14,6 +14,17 @@ var p = {//p = polyfill
                 keys[keys.length] = key;
             }
             return keys;
+        },
+
+        freeze: function(obj) {
+            Object.preventExtensions(obj);
+            for(var key in obj){
+                Object.defineProperty(obj, key, {
+                    writable: false,
+                    configurable: false
+                });
+            }
+            return obj;
         }
     },
 
@@ -112,6 +123,20 @@ var p = {//p = polyfill
                 this[j] = cur;
             }
             return this;
+        },
+
+        every: function(cb) {
+            for(var i = 0; i < this.length; i++){
+                if(!cb(this[i], i, this)) return false;
+            }
+            return true;
+        },
+
+        some: function(cb) {
+            for(var i = 0; i < this.length; i++){
+                if(cb(this[i], i, this)) return true;
+            }
+            return false;
         }
     },
 
@@ -143,12 +168,10 @@ var p = {//p = polyfill
         getArgStr(args, collectionName, from) {
             var from = from || 0;
             var argStr = '';
-            for(var i = from; i < args.length; i++){
-                argStr += collectionName + '[' + i + ']';
-                if(i !== args.length - 1){
-                    argStr += ',';
-                }
+            for(var i = from; i < args.length - 1; i++){
+                argStr += collectionName + '[' + i + '],';
             }
+            argStr += collectionName + '[' + i + ']';
             return argStr;
         }
     }
@@ -156,6 +179,7 @@ var p = {//p = polyfill
 
 Object._create = p.Object.create;
 Object._keys = p.Object.keys;
+Object._freeze = p.Object.freeze;
 
 Array.prototype._pop = p.Array.pop;
 Array.prototype._push = p.Array.push;
@@ -168,6 +192,8 @@ Array.prototype._reverse = p.Array.reverse;
 Array.prototype._join = p.Array.join;
 Array.prototype._reduce = p.Array.reduce;
 Array.prototype._sort = p.Array.sort;
+Array.prototype._every = p.Array.every;
+Array.prototype._some = p.Array.some;
 
 Function.prototype._call = p.Function.call;
 Function.prototype._apply = p.Function.apply;
