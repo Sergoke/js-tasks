@@ -1,4 +1,6 @@
-let p = {//p = polyfill
+"use strict";
+
+var p = {//p = polyfill
     Object: {
         create: function(proto) {
             return {
@@ -114,14 +116,46 @@ let p = {//p = polyfill
     },
 
     Function: {
-        call: function(thisArg) {
-            thisArg[this.name] = this;
-            var res = thisArg[this.name]();
-            delete thisArg[this.name];
+        call: function(context) {
+            var argStr = Function.$getArgStr(arguments, 'arguments', 1);
+            context[Symbol.for('func')] = this;
+            var res = eval("context[Symbol.for('func')](" + argStr + ')');
+            delete context[Symbol.for('func')];
             return res;
+        },
+
+        apply: function(context, args) {
+            var argStr = Function.$getArgStr(args, 'args');
+            return eval('this._call(context,' + argStr + ')');
+        },
+
+        bind: function(context) {
+            var func = this;
+            var bindArgs = arguments;
+            var bindArgStr = Function.$getArgStr(arguments, 'bindArgs', 1);
+            return function(){
+                var argStr = Function.$getArgStr(arguments, 'arguments');
+                return eval('func._call(context,' + bindArgStr + ',' + argStr + ')');
+            }
+        },
+
+        //static helper
+        getArgStr(args, collectionName, from) {
+            var from = from || 0;
+            var argStr = '';
+            for(var i = from; i < args.length; i++){
+                argStr += collectionName + '[' + i + ']';
+                if(i !== args.length - 1){
+                    argStr += ',';
+                }
+            }
+            return argStr;
         }
     }
 };
+
+Object._create = p.Object.create;
+Object._keys = p.Object.keys;
 
 Array.prototype._pop = p.Array.pop;
 Array.prototype._push = p.Array.push;
@@ -136,7 +170,6 @@ Array.prototype._reduce = p.Array.reduce;
 Array.prototype._sort = p.Array.sort;
 
 Function.prototype._call = p.Function.call;
-
-//tests
-console.log("Object.keys({name: 'Santa', surname: 'Claus'}): ", p.Object.keys({name: 'Santa', surname: 'Claus'}));
-console.log("Object.create({name: 'Santa', surname: 'Claus'}): ", p.Object.create({name: 'Santa', surname: 'Claus'}));
+Function.prototype._apply = p.Function.apply;
+Function.prototype._bind = p.Function.bind;
+Function.$getArgStr = p.Function.getArgStr;
