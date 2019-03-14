@@ -1,10 +1,12 @@
-let Student = (function(){
+"use strict";
+
+var Student = (function(){
     function Student(name, surname, birthYear, marks) {
         this.name = name;
-        this.surname = surname;
-        this.birthYear = birthYear;
+        this.surname = surname || 'Anonymous';
+        this.birthYear = birthYear || 1970;
         this.marks = marks || [];
-        this.attendance = new Array(25);
+        this.attendance = Object.defineProperty(new Array(25), 'length', {writable: false});
     }
 
     Student.prototype.getAge = function() {
@@ -13,7 +15,7 @@ let Student = (function(){
 
     Student.prototype.getAverageMark = function() {
         if(!this.marks.length) return -1;
-        let sum = this.marks.reduce(function(prev, cur) {
+        var sum = this.marks.reduce(function(prev, cur) {
             return prev + cur;
         });
         return sum / this.marks.length;
@@ -28,9 +30,9 @@ let Student = (function(){
     };
 
     Student.prototype.summary = function() {
-        let daysPassed = this.attendance.filter(elem => true).length;
-        let attended = this.attendance.filter(day => day).length;
-        let averageAttendance = attended / daysPassed;
+        var daysPassed = this.attendance.filter(elem => true).length;
+        var attended = this.attendance.filter(day => day).length;
+        var averageAttendance = attended / daysPassed;
         if(this.getAverageMark() >= 90 && averageAttendance >= 0.9){
             return "Ути какой молодчинка!";
         }
@@ -43,19 +45,20 @@ let Student = (function(){
     //private helpers
     function addAttendance(wasAttended) {
         let index = Math.max(this.attendance.lastIndexOf(true), this.attendance.lastIndexOf(false)) + 1;
-        if(index < this.attendance.length) {
+        try {
             this.attendance[index] = wasAttended;
-            return true;
+        } catch(err) {
+            console.error('max array length exceeded,', err);
         }
-        return false;
+        return wasAttended;
     }
 
     return Student;
 })();
 
-let david = new Student('David', 'Smith', 2000, [90, 30, 200]);
+var david = new Student('David', 'Smith', 2000, [90, 30, 200]);
 
-for(let i = 0; i < 100; i++){
+for(var i = 0; i < 26; i++){
     Math.random() < 0.95 ? david.present() : david.absent();
 }
 
