@@ -4,7 +4,7 @@ var Student = (function(){
     function Student(name, surname, birthYear, marks) {
         this.name = name;
         this.surname = surname || 'Anonymous';
-        this.birthYear = birthYear || 1970;
+        this.birthYear = birthYear || new Date().getFullYear() - 18;
         this.marks = marks || [];
         this.attendance = Object.defineProperty(new Array(25), 'length', {writable: false});
     }
@@ -30,8 +30,8 @@ var Student = (function(){
     };
 
     Student.prototype.summary = function() {
-        var daysPassed = this.attendance.filter(elem => true).length;
-        var attended = this.attendance.filter(day => day).length;
+        var daysPassed = this.attendance.filter(function(){return true}).length;
+        var attended = this.attendance.filter(function(day){return day}).length;
         var averageAttendance = attended / daysPassed;
         if(this.getAverageMark() >= 90 && averageAttendance >= 0.9){
             return "Ути какой молодчинка!";
@@ -56,6 +56,7 @@ var Student = (function(){
     return Student;
 })();
 
+//tests
 var david = new Student('David', 'Smith', 2000, [90, 30, 200]);
 
 for(var i = 0; i < 26; i++){
