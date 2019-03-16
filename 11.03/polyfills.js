@@ -2,16 +2,18 @@
 
 var p = {//p = polyfill
     Object: {
-        create: function(proto) {
-            return {
-                __proto__: proto
+        create: function(prototype) {
+            return new function f() {
+                f.prototype = prototype;
             };
         },
 
         keys: function(obj) {
             var keys = [];
-            for(var key in obj){
-                keys[keys.length] = key;
+            for(var key in obj) {
+                if(obj.hasOwnProperty(key)) {
+                    keys[keys.length] = key;
+                }
             }
             return keys;
         },
