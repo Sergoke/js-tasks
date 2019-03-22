@@ -55,15 +55,3 @@ var Student = (function(){
 
     return Student;
 })();
-
-//tests
-var david = new Student('David', 'Smith', 2000, [90, 30, 200]);
-
-for(var i = 0; i < 26; i++){
-    Math.random() < 0.95 ? david.present() : david.absent();
-}
-
-console.log('age: ' + david.getAge());
-console.log('attenance length: ' + david.attendance.length);
-console.log('average mark: ' + david.getAverageMark());
-console.log('summary: ' + david.summary());
